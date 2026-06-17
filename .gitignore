@@ -1,0 +1,6 @@
+config.defaults.local.json
+.env
+.env.*
+node_modules/
+*.log
+.DS_Store
