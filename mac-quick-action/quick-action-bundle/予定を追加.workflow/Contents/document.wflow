@@ -62,7 +62,7 @@
 					<string>export LANG=ja_JP.UTF-8
 export LC_ALL=ja_JP.UTF-8
 NODE="$(command -v node || true)"; [ -z "$NODE" ] &amp;&amp; NODE=/opt/homebrew/bin/node
-"$NODE" --no-warnings "/Users/ryuiyamada/Desktop/ryui-workspace/projects/apps/tasks-manager/desktop-quickaction/add-event.mjs" "$@"</string>
+"$NODE" --no-warnings "$HOME/path/to/yotei-tsuika/desktop-quickaction/add-event.mjs" "$@"</string>
 					<key>CheckedForUserDefaultShell</key>
 					<true/>
 					<key>inputMethod</key>
