@@ -58,22 +58,30 @@ AIが解析した日時・タイトル・場所を確認。必要なら修正し
 
 ---
 
-## セットアップ
+## インストール
 
-### Chrome拡張
+### 方法 A — ZIP をダウンロード（簡単・推奨）
 
-1. このリポジトリをダウンロード（またはクローン）
-2. Chrome → `設定` → `拡張機能` → `デベロッパーモード ON` → `パッケージ化されていない拡張機能を読み込む`
-3. `chrome-extension/` フォルダを選択
-4. 拡張機能のオプションで Gemini API Key と使用するカレンダーを設定
+1. [Releases](https://github.com/RYUIYAMADA/quick-calendar/releases) から **`quick-calendar-extension.zip`** をダウンロード
+2. ZIP を解凍する（`quick-calendar-extension` フォルダが作成される）
+3. Chrome で `chrome://extensions/` を開く
+4. 右上の **「デベロッパーモード」をオン**にする
+5. **「パッケージ化されていない拡張機能を読み込む」** をクリック
+6. 解凍してできたフォルダ（`quick-calendar-extension`）を選択
+7. 初回起動で設定ウィザードが開くので、自分の **Gemini APIキー** と **Googleカレンダー** を入力する
 
-詳細: [chrome-extension/README.md](chrome-extension/README.md)
+### 方法 B — リポジトリをダウンロードした場合
+
+> **重要**: `quick-calendar-main`（リポのルートフォルダ）ではなく、その中の **`chrome-extension` フォルダ** を読み込んでください。ルートには `manifest.json` がないためエラーになります。
+
+1. リポジトリを ZIP でダウンロード → 解凍
+2. Chrome で `chrome://extensions/` を開く
+3. 右上の **「デベロッパーモード」をオン**にする
+4. **「パッケージ化されていない拡張機能を読み込む」** をクリック
+5. 解凍したフォルダの中の **`chrome-extension`** フォルダを選択
+6. 初回起動で設定ウィザードが開くので、自分の **Gemini APIキー** と **Googleカレンダー** を入力する
 
 ### macOSクイックアクション
-
-1. `mac-quick-action/` 内のスクリプトをダウンロード
-2. Automator でクイックアクションとして登録
-3. Gemini API Key を設定
 
 詳細: [mac-quick-action/README.md](mac-quick-action/README.md)
 
