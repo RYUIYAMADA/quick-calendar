@@ -333,3 +333,81 @@ input[type="password"]:focus {
   margin-top: 20px;
   width: 100%;
 }
+
+/* ── Googleログインボタン ── */
+.login-area {
+  margin: 8px 0 12px;
+}
+
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 0;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  background: #fff;
+  color: #3c4043;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.btn-google:hover {
+  background: #f8f9fa;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+.btn-google .google-icon {
+  width: 16px;
+  height: 16px;
+  fill: #4285f4;
+  flex-shrink: 0;
+}
+
+.login-status {
+  font-size: 12px;
+  margin-top: 8px;
+  min-height: 18px;
+  line-height: 1.5;
+}
+
+.login-status.ok {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.login-status.fail {
+  color: var(--color-danger);
+}
+
+/* ── カレンダー選択エリア ── */
+.calendar-select-area {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+select {
+  width: 100%;
+  padding: 7px 9px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+select:focus {
+  border-color: var(--color-accent);
+}

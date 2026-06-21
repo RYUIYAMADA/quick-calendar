@@ -2,9 +2,10 @@
  * confirm.js — 確認ポップアップのロジック
  *
  * セキュリティ: innerHTML に外部テキストを入れない。value / textContent のみ使用。
+ * CSP: インラインstyle禁止。スタイルは全て confirm.css のクラスで管理。
  *
  * フロー:
- *   1. 開いた直後: 「解析中...」を表示（ポップアップは必ず表示される）
+ *   1. 開いた直後: カレンダー一覧を取得しドロップダウンを動的生成 + 「解析中...」を表示
  *   2. background に { type: 'parse-text' } を送信 → Gemini 解析
  *   3. 成功: フォームに値をセット
  *   4. 失敗: エラー表示 + 選択テキストを本文欄に入れ手動編集できる状態にする
@@ -27,26 +28,67 @@
   statusEl.textContent = '解析中...';
   btnRegister.disabled = true;
 
-  console.debug('[tasks-manager] confirm.html 起動, parse-text を background へ送信');
+  // ── カレンダー一覧を取得してドロップダウンを動的生成 ──
+  async function loadCalendars() {
+    let savedCalendarId = null;
+    try {
+      const s = await chrome.storage.local.get(['calendarId']);
+      savedCalendarId = s.calendarId || null;
+    } catch (_) {}
 
-  // ── background へ解析依頼 ──
-  let response;
-  try {
-    response = await chrome.runtime.sendMessage({ type: 'parse-text' });
-  } catch (e) {
-    // SW が起きていない場合など
-    console.error('[tasks-manager] parse-text sendMessage 例外:', e.message);
-    response = { success: false, error: `通信エラー: ${e.message}` };
+    let calendars = [];
+    try {
+      const res = await chrome.runtime.sendMessage({ type: 'list-calendars' });
+      if (res && res.success && Array.isArray(res.calendars)) {
+        calendars = res.calendars;
+      }
+    } catch (e) {
+      console.debug('[tasks-manager] カレンダー一覧取得失敗（フォールバック: primary）:', e.message);
+    }
+
+    // ドロップダウンを生成
+    calendarEl.textContent = '';
+    if (calendars.length === 0) {
+      // フォールバック
+      const opt = document.createElement('option');
+      opt.value = 'primary';
+      opt.textContent = 'マイカレンダー（デフォルト）';
+      calendarEl.appendChild(opt);
+    } else {
+      calendars.forEach(cal => {
+        const opt = document.createElement('option');
+        opt.value = cal.id;
+        opt.textContent = cal.primary ? `${cal.summary}（メイン）` : cal.summary;
+        calendarEl.appendChild(opt);
+      });
+    }
+
+    // 保存済み calendarId があれば選択
+    if (savedCalendarId) {
+      calendarEl.value = savedCalendarId;
+    }
+    // 保存済み選択肢が存在しない場合は primary を優先
+    if (!calendarEl.value) {
+      const primaryOpt = Array.from(calendarEl.options).find(o => o.textContent.includes('メイン'));
+      if (primaryOpt) calendarEl.value = primaryOpt.value;
+    }
   }
+
+  // カレンダー一覧ロードと Gemini 解析を並列で実行
+  const [, response] = await Promise.all([
+    loadCalendars().catch(e => console.error('[tasks-manager] loadCalendars 失敗:', e.message)),
+    chrome.runtime.sendMessage({ type: 'parse-text' }).catch(e => {
+      console.error('[tasks-manager] parse-text sendMessage 例外:', e.message);
+      return { success: false, error: `通信エラー: ${e.message}` };
+    })
+  ]);
 
   console.debug('[tasks-manager] parse-text レスポンス:', response?.success, response?.error);
 
   if (response && response.success && response.parsed) {
-    // ── 解析成功: フォームに値をセット ──
     const p = response.parsed;
     titleEl.value       = p.title       || '';
     dateEl.value        = p.date        || '';
-    calendarEl.value    = p.calendarKey === 'work' ? 'work' : 'personal';
     startTimeEl.value   = p.startTime   || '';
     endTimeEl.value     = p.endTime     || '';
     locationEl.value    = p.location    || '';
@@ -55,15 +97,13 @@
     statusEl.textContent = '';
     btnRegister.disabled = false;
 
-    // meetUrl は登録時に使うため hidden 属性で保持
+    // meetUrl は登録時に使うため data 属性で保持
     btnRegister.dataset.meetUrl = p.meetUrl || '';
   } else {
-    // ── 解析失敗: エラー表示 + 選択テキストを本文欄へ（手動編集可）──
     const errMsg = (response && response.error) ? response.error : '解析に失敗しました';
     statusEl.textContent = `解析エラー: ${errMsg.substring(0, 120)}。手動で入力してください。`;
     statusEl.className   = 'error';
 
-    // 選択テキストを本文欄にセット（originalText があれば）
     if (response && response.originalText) {
       descriptionEl.value = response.originalText;
     }
@@ -72,19 +112,24 @@
     console.error('[tasks-manager] 解析失敗, 手動入力モードへ:', errMsg);
   }
 
-  // ── 登録処理（共通関数）——Enter キーとボタン click の両方から呼ぶ ──
+  // ── 登録処理 ──
   async function submitRegistration() {
-    // disabled 中（解析中 or 二重送信防止）は何もしない
     if (btnRegister.disabled) return;
 
     btnRegister.disabled = true;
     statusEl.className   = '';
     statusEl.textContent = '登録中...';
 
+    // カレンダー選択を保存
+    const selectedCalendarId = calendarEl.value || 'primary';
+    try {
+      await chrome.storage.local.set({ calendarId: selectedCalendarId });
+    } catch (_) {}
+
     const eventData = {
       title:       titleEl.value.trim(),
       date:        dateEl.value,
-      calendarKey: calendarEl.value,
+      calendarId:  selectedCalendarId,
       startTime:   startTimeEl.value || null,
       endTime:     endTimeEl.value   || null,
       allDay:      !startTimeEl.value,
@@ -132,27 +177,21 @@
     }
   }
 
-  // ── 登録ボタン ──
   btnRegister.addEventListener('click', submitRegistration);
 
-  // ── Enter キーハンドラ ──
-  // textarea: 通常 Enter は改行。Cmd+Enter / Ctrl+Enter で登録。
-  // その他 input/select: Enter で登録。
-  // IME 変換中（isComposing）は全て無視。
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;
-    if (e.isComposing) return; // IME 変換確定の Enter を誤発火させない
+    if (e.isComposing) return;
 
-    const isTextarea    = e.target.tagName === 'TEXTAREA';
-    const isModified    = e.metaKey || e.ctrlKey; // Cmd+Enter / Ctrl+Enter
+    const isTextarea = e.target.tagName === 'TEXTAREA';
+    const isModified = e.metaKey || e.ctrlKey;
 
-    if (isTextarea && !isModified) return; // textarea での通常 Enter は改行に任せる
+    if (isTextarea && !isModified) return;
 
     e.preventDefault();
     submitRegistration();
   });
 
-  // ── キャンセルボタン ──
   btnCancel.addEventListener('click', () => {
     window.close();
   });

@@ -146,8 +146,7 @@
     e.stopPropagation();
     e.preventDefault();
 
-    const selection = window.getSelection();
-    const text = selection ? selection.toString().trim() : '';
+    const text = lastText; // ボタン表示時に保存済み。クリック後の選択解除に依存しない
     hideButton();
 
     if (!text || text.length > MAX_TEXT_LEN) return;

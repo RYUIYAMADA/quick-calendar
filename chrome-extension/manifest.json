@@ -1,8 +1,10 @@
 {
   "manifest_version": 3,
   "name": "Quick-calendar",
-  "version": "2.6.0",
+  "version": "3.0.0",
   "description": "選択したテキストをワンクリックでGoogleカレンダーに登録",
+
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA069lpQ3Qw8YLGkHV/c0TUbt+PpYHq+lO5CgH+DoGPEZsJ58HXOatNF1MDbs2vDp+d3du+zsbekPCL6de6GftuPFFbqItObx1DPWN3suo5P0ZKcnQiUem+/PEbVrR1e5GxEIIVDU51MZQoKRKjBzViMjyBeAKKBJfMsZiFjRlJaXUYu9tzkgHeLi/0Q0aQHEw4Y9mn5jSH8mSvb4J4Ao/gYP6QNzhPgyXN4qZZA+jzzMyXvXkhOE/LCjTqzzkGxKPGbUHMCL32OBI23wOhiqDd+rOozsEzRVfvQIPdCqC/IE75QJ2O0y/lzQiSZx/MDK5zs7sWjiCUoUk9iI2mIVE/wIDAQAB",
 
   "content_security_policy": {
     "extension_pages": "script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com"
@@ -16,12 +18,19 @@
     }
   ],
 
-  "permissions": ["contextMenus", "storage", "notifications"],
+  "permissions": ["contextMenus", "storage", "notifications", "identity"],
   "host_permissions": [
     "https://generativelanguage.googleapis.com/*",
-    "https://script.google.com/*",
-    "https://script.googleusercontent.com/*"
+    "https://www.googleapis.com/*"
   ],
+
+  "oauth2": {
+    "client_id": "519333075327-8bv9ib23ej9bgbujs0c9i6q0f7aag6h4.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/calendar.events",
+      "https://www.googleapis.com/auth/calendar.readonly"
+    ]
+  },
 
   "background": {
     "service_worker": "background.js",

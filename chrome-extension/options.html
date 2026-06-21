@@ -17,28 +17,30 @@
     </svg>
     Quick-calendar — 設定
   </h1>
-  <p class="subtitle">3つの値を入力して保存してください</p>
+  <p class="subtitle">設定を変更して保存してください</p>
 
   <p class="section-title">Gemini API</p>
 
   <div class="field">
     <label for="geminiApiKey">GEMINI_API_KEY</label>
-    <p class="field-desc">Google AI Studio で取得したAPIキー</p>
+    <p class="field-desc">Google AI Studio で取得した API キー</p>
     <input type="password" id="geminiApiKey" placeholder="AIza...">
   </div>
 
-  <p class="section-title section-gap">GAS（Google Apps Script）</p>
+  <p class="section-title section-gap">Google カレンダー連携</p>
 
   <div class="field">
-    <label for="gasWebAppUrl">GAS WebアプリURL</label>
-    <p class="field-desc">Quick-calendar の GAS をデプロイした「ウェブアプリURL」</p>
-    <input type="text" id="gasWebAppUrl" placeholder="https://script.google.com/macros/s/...">
+    <label for="loginStatus">ログイン状態</label>
+    <p id="loginStatus" class="login-status-text"></p>
+    <button class="btn-login" id="btn-google-login" type="button">Googleでログイン / 再ログイン</button>
   </div>
 
   <div class="field">
-    <label for="gasToken">GAS トークン</label>
-    <p class="field-desc">GAS 側の apiToken2 と一致するトークン（必須）</p>
-    <input type="password" id="gasToken" placeholder="GASトークンを入力してください">
+    <label for="calendarId">デフォルトカレンダー</label>
+    <p class="field-desc">予定登録時に最初に選択されるカレンダー（登録画面でも変更可）</p>
+    <select id="calendarId">
+      <option value="primary">マイカレンダー（デフォルト）</option>
+    </select>
   </div>
 
   <button class="btn-save" id="btn-save" type="button">保存</button>

@@ -23,7 +23,7 @@
     </svg>
     <h1>Quick-calendar へようこそ</h1>
   </div>
-  <p class="tagline">3ステップで設定完了。選択テキストを即カレンダー登録できます。</p>
+  <p class="tagline">2ステップで設定完了。選択テキストを即カレンダー登録できます。</p>
 
   <!-- ステップ進捗バー -->
   <div class="step-bar" aria-label="設定ステップ">
@@ -35,7 +35,7 @@
   </div>
   <div class="step-labels">
     <span id="label-1" class="active">Gemini API</span>
-    <span id="label-2">カレンダー連携</span>
+    <span id="label-2">Googleログイン</span>
     <span id="label-3">テスト &amp; 保存</span>
   </div>
 
@@ -67,37 +67,45 @@
     </div>
   </div>
 
-  <!-- ステップ 2: GAS カレンダー連携 -->
+  <!-- ステップ 2: Googleログイン -->
   <div class="step-panel" id="step-2">
     <div class="card">
       <p class="card-title">
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          <path d="M20.283 10.356h-8.327v3.451h4.792c-.446 2.193-2.313 3.453-4.792 3.453a5.27 5.27 0 0 1-5.279-5.28 5.27 5.27 0 0 1 5.279-5.279c1.259 0 2.397.447 3.29 1.178l2.6-2.599c-1.584-1.381-3.615-2.233-5.89-2.233a8.908 8.908 0 0 0-8.934 8.934 8.908 8.908 0 0 0 8.934 8.934c4.467 0 8.529-3.249 8.529-8.934 0-.528-.081-1.097-.202-1.625z"/>
         </svg>
-        ② Google カレンダー連携（GAS）
+        ② Googleでログイン
       </p>
       <p class="card-desc">
-        Google Apps Script（GAS）を仲介して Google カレンダーに登録します。<br>
-        <a href="https://github.com/RYUIYAMADA/tasks-manager#gas-setup" target="_blank" class="hint-link">GAS のデプロイ手順はこちら →</a>
+        Googleアカウントでログインして、Google カレンダーへのアクセスを許可します。<br>
+        GAS（Google Apps Script）の設定は不要です。
       </p>
 
-      <div class="field">
-        <label for="gasWebAppUrl">GAS ウェブアプリ URL</label>
-        <p class="field-note">GAS をデプロイした際に発行される URL です。<br>例: https://script.google.com/macros/s/AKfycb.../exec</p>
-        <input type="text" id="gasWebAppUrl" placeholder="https://script.google.com/macros/s/..." autocomplete="off">
+      <div class="login-area" id="login-area">
+        <button class="btn btn-google" id="btn-google-login" type="button">
+          <svg class="google-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.283 10.356h-8.327v3.451h4.792c-.446 2.193-2.313 3.453-4.792 3.453a5.27 5.27 0 0 1-5.279-5.28 5.27 5.27 0 0 1 5.279-5.279c1.259 0 2.397.447 3.29 1.178l2.6-2.599c-1.584-1.381-3.615-2.233-5.89-2.233a8.908 8.908 0 0 0-8.934 8.934 8.908 8.908 0 0 0 8.934 8.934c4.467 0 8.529-3.249 8.529-8.934 0-.528-.081-1.097-.202-1.625z"/>
+          </svg>
+          Googleでログイン
+        </button>
+        <p id="login-status" class="login-status"></p>
       </div>
 
-      <div class="field">
-        <label for="gasToken">GAS トークン</label>
-        <p class="field-note">GAS スクリプト内で設定した apiToken2 と同じ値を入力してください。不正アクセスを防ぎます。</p>
-        <input type="password" id="gasToken" placeholder="任意の文字列（GAS 側と一致）" autocomplete="off">
+      <div class="calendar-select-area hidden" id="calendar-select-area">
+        <div class="field">
+          <label for="defaultCalendar">デフォルトのカレンダー（任意）</label>
+          <p class="field-note">登録時に最初に選択されるカレンダーです。後から変更できます。</p>
+          <select id="defaultCalendar">
+            <option value="primary">マイカレンダー（デフォルト）</option>
+          </select>
+        </div>
       </div>
+
       <p id="step2-error" class="field-error hidden"></p>
     </div>
     <div class="nav">
       <button class="btn btn-secondary" id="btn-back-2" type="button">戻る</button>
-      <button class="btn btn-primary" id="btn-next-2" type="button">次へ</button>
+      <button class="btn btn-primary" id="btn-next-2" type="button" disabled>次へ</button>
     </div>
   </div>
 
@@ -113,12 +121,12 @@
       </p>
       <p class="card-desc">
         入力した設定が正しく動作するか確認します。<br>
-        テストは Gemini API と GAS の両方に疎通確認を送ります。
+        テストは Gemini API と Google カレンダー連携の両方を確認します。
       </p>
       <button class="btn btn-secondary" id="btn-test" type="button">接続テストを実行</button>
 
       <div class="test-result" id="test-gemini" role="status"></div>
-      <div class="test-result" id="test-gas" role="status"></div>
+      <div class="test-result" id="test-calendar" role="status"></div>
     </div>
     <div class="nav">
       <button class="btn btn-secondary" id="btn-back-3" type="button">戻る</button>
