@@ -1,0 +1,51 @@
+
+# Electron
+# IDE
+# OS
+# キャッシュ・ログ
+# テスト
+# ノードモジュール
+# ランタイム生成物・秘密設定
+# 再発防止: symlink の node_modules も除外（末尾スラッシュ無し）
+# 環境変数・秘密情報
+**/addbutton-preview.png
+**/confirm-popup-preview.png
+*.app
+*.broken.*
+*.dmg
+*.exe
+*.log
+*.swo
+*.swp
+*~
+.DS_Store
+.cache/
+.env
+.env.*.local
+.env.local
+.idea/
+.nyc_output/
+.startup-check
+.vscode/
+Thumbs.db
+calendar-data.json
+coverage/
+dist/
+dist_electron/
+gas-config.json
+landing-page/index.standalone.html
+landing-page/lp-preview.png
+node_modules
+node_modules/
+package-lock.json
+pending-events.json
+startup.log
+tasks/
+yarn.lock
+
+# Claude Code worktrees（無関係・公開除外）
+.claude/worktrees/
+.claude/
+
+# GAS clasp 設定（スクリプトID含むため公開除外）
+gas/.clasp.json
