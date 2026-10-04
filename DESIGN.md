@@ -8,7 +8,7 @@ updated: 2026-06-18
 # DESIGN.md — quick-calendar
 
 > このファイルは Claude Code / Codex が UI を作るとき**毎回最初に読む**設計契約。
-> グローバルDS（`~/Desktop/ryui-workspace/projects/tools/ryuiyamada-design-system/`）を継承し、
+> グローバルDS（`~/ryui-workspace/os/ryuiyamada-design-system/`）を継承し、
 > **このプロジェクト固有の差分だけ**ここに書く。global と矛盾する時はこのファイルが優先。
 
 ## 1. このプロダクトは何か
